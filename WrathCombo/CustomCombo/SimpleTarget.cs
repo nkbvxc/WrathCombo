@@ -398,9 +398,17 @@ internal static class SimpleTarget
             .FirstOrDefault();
 
     public static IGameObject? DottableEnemy
-    (uint dotAction,
+        (uint dotAction,
         ushort dotDebuff,
         int minHPPercent = 10,
+        float reapplyThreshold = 1,
+        int maxNumberOfEnemiesInRange = 3) => DottableEnemy(dotAction, dotDebuff, (_) => minHPPercent, reapplyThreshold, maxNumberOfEnemiesInRange);
+    
+
+    public static IGameObject? DottableEnemy
+    (uint dotAction,
+        ushort dotDebuff,
+        Func<IGameObject?, int> minHPPercent,
         float reapplyThreshold = 1,
         int maxNumberOfEnemiesInRange = 3)
     {
@@ -419,7 +427,7 @@ internal static class SimpleTarget
 
         return nearbyEnemies
             .Where(x => x.CanUseOn(dotAction) &&
-                        (float)x.CurrentHp / x.MaxHp * 100f > minHPPercent &&
+                        (float)x.CurrentHp / x.MaxHp * 100f > minHPPercent(x) &&
                         !JustUsedOn(dotAction, x) &&
                         IsInLineOfSight(x) &&
                         GetStatusEffectRemainingTime
