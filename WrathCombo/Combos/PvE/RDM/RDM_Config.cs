@@ -56,6 +56,7 @@ internal partial class RDM
                 case Preset.RDM_Balance_Opener:
                     DrawHorizontalRadioButton(RDM_Opener_Selection, "Standard Opener", "Balance Standard Opener", 0);
                     DrawHorizontalRadioButton(RDM_Opener_Selection, "GapClosing Adjusted Standard Opener", "Shifts the melee a little bit to put a gapcloser in", 1);
+                    DrawHorizontalRadioButton(RDM_Opener_Selection, "1st GCD Buffs", "Click off Acceleration 7.5 seconds prepull", 2);
 
                     ImGui.Indent();
                     DrawBossOnlyChoice(RDM_BalanceOpener_Content);

@@ -257,10 +257,12 @@ internal partial class RDM
     #region Opener
     internal static Standard Opener1 = new();
     internal static GapClosing Opener2 = new();
+    internal static FirstGCDBuffs Opener3 = new();
     internal static WrathOpener Opener()
     {
         if (RDM_Opener_Selection == 0 && Opener1.LevelChecked) return Opener1;
         if (RDM_Opener_Selection == 1 && Opener2.LevelChecked) return Opener2;
+        if (RDM_Opener_Selection == 2 && Opener3.LevelChecked) return Opener3;
 
         return (Opener1.LevelChecked) ? Opener1 : WrathOpener.Dummy;
     }
@@ -382,6 +384,66 @@ internal partial class RDM
         ];
 
         public override List<(int[] Steps, Func<bool> Condition)> SkipSteps { get; set; } = 
+        [
+            ([15, 20], () => !InMeleeRange()),
+            ([35], () => !HasStatusEffect(Buffs.Swiftcast) && !JustUsed(Role.Swiftcast))
+        ];
+
+        internal override UserData? ContentCheckConfig => RDM_BalanceOpener_Content;
+        public override Preset Preset => Preset.RDM_Balance_Opener;
+        public override bool HasCooldowns()
+        {
+            if (!ActionsReady([Role.Swiftcast, Fleche, Embolden, ContreSixte]) || GetRemainingCharges(Acceleration) < 2 ||
+                !IsOffCooldown(Manafication) ||
+                GetRemainingCharges(Engagement) < 2 ||
+                GetRemainingCharges(Corpsacorps) < 2)
+                return false;
+
+            return true;
+        }
+    }
+    internal class FirstGCDBuffs : WrathOpener
+    {
+        public override List<uint> OpenerActions { get; set; } =
+        [
+            Acceleration,
+            Veraero3,
+            Veraero3,
+            Embolden,
+            GrandImpact,
+            Fleche,
+            Manafication,
+            EnchantedRiposte,
+            Engagement,
+            EnchantedZwerchhau,
+            Corpsacorps,
+            EnchantedRedoublement,
+            ContreSixte,
+            Verflare,
+            Engagement,
+            Corpsacorps,
+            Scorch,
+            Role.Swiftcast,
+            Acceleration,
+            Resolution,
+            ViceOfThorns,
+            Prefulgence,
+            Veraero3,
+            GrandImpact,
+            Verthunder3,
+            Verfire,
+            Verthunder3,
+
+        ];
+        public override int MinOpenerLevel => 100;
+        public override int MaxOpenerLevel => 109;
+
+        public override List<(int[] Steps, uint NewAction, Func<bool> Condition)> SubstitutionSteps { get; set; } =
+        [
+            ([1], Jolt3, () => PartyInCombat() && !Player.Object.IsCasting)
+        ];
+
+        public override List<(int[] Steps, Func<bool> Condition)> SkipSteps { get; set; } =
         [
             ([15, 20], () => !InMeleeRange()),
             ([35], () => !HasStatusEffect(Buffs.Swiftcast) && !JustUsed(Role.Swiftcast))
